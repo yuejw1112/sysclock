@@ -1,0 +1,34 @@
+// cython打包c代码实现linux精确计时
+
+// python的time.clock在windows系统下给予queryperformance计时方法能够提供高精度定时，然而在linux系统下，time.clock提供的是cup进程时间。目前缺乏较好的计时方法。
+
+// 在linux的api库下，（sys/time.h）的gettimeofday能够提供微秒级的计时。
+
+//precesion_time.c文件 函数的c代码实现
+
+#include<sys/time.h>
+double precision_time() 
+{
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    return tv.tv_sec + tv.tv_usec/1000000.;
+}
+
+//linux_clock.pyx文件 cython申明文件
+
+cdef extern from "precision_time.c":    #从precision_time.c文件中导出precision_time函数
+    double precision_time()
+    
+def clock():    #定义python函数的接口
+    return precision_time()
+
+//终端：cython linux_clock.pyx （将会在同一个目录生成linux_clock.c文件）
+//终端：gcc linux_clock.c -shared -fPIC -I /usr/include/python2.7 -lpython2.7 -o linux_clock.so
+//成功后，在该目录将生成linux_clock.so文件，至此依赖于该文件，在python中就可以直接使用了：
+import linux_clock
+print linux_clock.clock()
+
+//可能提示的错误：找不到python.h
+//解决方法：安装python-dev  终端：sudo apt-get install python-dev
+//解决方法二：/usr/include/python2.7目录不存在，可以输入/usr/include/利用tap键盘找到正确的python路径
+//解决方法三：如果还有提示错误，可在最前端命令加入权限sudo

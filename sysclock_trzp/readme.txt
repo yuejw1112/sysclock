@@ -1,0 +1,5 @@
+from get_clock import get_clock
+from get_global_clock import get_global_clock
+
+get_clock:跨windows和linux平台的高精度clock
+get_global_clock:跨windows和linux平台的高精度全局clock，且windows下所有调用的线程将被绑定到同一个处理器核心

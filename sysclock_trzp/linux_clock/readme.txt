@@ -1,0 +1,4 @@
+linux_clock: 用于linux系统下，提供微妙级别计时，返回的是全局的时间second
+win_global_clock: 用于windows系统，提供微妙级别计时，返回的是全局的时间second
+
+win_global_clock和windows下的time.clock是一样的，但是time.clock返回的是距离第一次调用该函数的时间。win_global_clock的目的在于提供同一台计算机多个进程的时钟对齐。
