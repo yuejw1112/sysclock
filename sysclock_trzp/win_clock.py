@@ -13,21 +13,29 @@ u'''
 注意：不要随意导入该模块，因为任何导入该模块的线程都将被绑定到多核CPU的第1个核心
 '''
 
+from __future__ import division
+from __future__ import print_function
 import ctypes
-import time
 
-kernel32dll = ctypes.windll.kernel32 
-DWORD = ctypes.c_uint32
-HANDLE = ctypes.c_voidp
-LARGE_INTEGER = ctypes.c_int64
-counter = kernel32dll.QueryPerformanceCounter
+kernel32dll = ctypes.windll.kernel32
 kernel32dll.SetThreadAffinityMask(kernel32dll.GetCurrentThread(),0x00000001)
-
-timebase = LARGE_INTEGER()
-kernel32dll.QueryPerformanceFrequency(ctypes.addressof(timebase))
-__FREQ__ = float(timebase.value)
+freq = ctypes.c_longlong(0)
+kernel32dll.QueryPerformanceFrequency(ctypes.byref(freq))
+freq = freq.value
 
 def global_clock():
-    counter  = LARGE_INTEGER()
-    kernel32dll.QueryPerformanceCounter(ctypes.addressof(counter))
-    return float(counter.value)/__FREQ__
+    counter  = ctypes.c_longlong(0)
+    kernel32dll.QueryPerformanceCounter(ctypes.byref(counter))
+    return counter.value/freq
+
+if __name__ == '__main__':
+    print(global_clock())
+    
+    
+    
+    
+    
+    
+    
+    
+    
